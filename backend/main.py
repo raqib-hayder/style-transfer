@@ -7,6 +7,7 @@ from PIL import Image
 from fastapi import FastAPI, File, UploadFile
 
 import config
+import inference
 
 app = FastAPI()
 
@@ -18,7 +19,8 @@ def health():
 
 @app.post("/{style}")
 def get_image(style: str, file: UploadFile = File(...)):
-    image = np.array(Image.open(file.file))  # Convert image to numpy array
+    rgb_image = Image.open(file.file).convert("RGB")  # Convert image to RGB format
+    image = np.array(rgb_image)  # Convert image to numpy array
     model = config.STYLES[style]  # Select model to use for style transfer
     output, resized = inference.inference(model, image)  # Style transfer the image
     name = f"/storage/{str(uuid.uuid4())}.jpg"  # Name the image
