@@ -21,6 +21,25 @@ To build the frontend image and run the container:
 ```shell
 cd frontend
 docker build -t frontend .
-docker run -p 8081:8081 frontend
+docker run -p 8501:8501 frontend
+```
+
+Docker compose
+```shell
+docker-compose up -d --build
+```
+
+**Note**:
+The storage of the host machine is mapped to the storage of each container. This is important for sharing the path and also to persist data when spinning down the containers.
+Thus, both the backend and frontend can access images from the same shared volume:
+``` python
+# backend
+name = f"/storage/{str(uuid.uuid4())}.jpg"
+cv2.imwrite(name, output)
+return {"name": name}
+
+# frontend
+img_path = res.json()
+image = Image.open(img_path.get("name"))
 ```
 
